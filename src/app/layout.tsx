@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Sora, Inter } from "next/font/google";
+import { PrivyProviderWrapper } from "@/components/PrivyProviderWrapper";
 import "./globals.css";
 
 const sora = Sora({
@@ -26,7 +27,9 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${sora.variable} ${inter.variable} font-body antialiased bg-bg text-ink`}>
-        <div className="mx-auto min-h-screen max-w-[400px] bg-bg">{children}</div>
+        <div className="mx-auto min-h-screen max-w-[400px] bg-bg">
+          <PrivyProviderWrapper>{children}</PrivyProviderWrapper>
+        </div>
       </body>
     </html>
   );

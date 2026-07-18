@@ -6,18 +6,21 @@ import { Movements } from "@/components/Movements";
 import { CryptoToggle } from "@/components/CryptoToggle";
 import { SendSheet } from "@/components/SendSheet";
 import { Toast } from "@/components/Toast";
+import { AuthGate } from "@/components/AuthGate";
 
 export default function Home() {
   return (
-    <main className="relative">
-      <Header />
-      <Balance />
-      <Actions />
-      <CryptoCard />
-      <Movements />
-      <CryptoToggle />
-      <SendSheet />
-      <Toast />
-    </main>
+    <AuthGate>
+      <main className="relative">
+        <Header />
+        <Balance />
+        <Actions />
+        <CryptoCard />
+        <Movements />
+        <CryptoToggle />
+        <SendSheet />
+        <Toast />
+      </main>
+    </AuthGate>
   );
 }
