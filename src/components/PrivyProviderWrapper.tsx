@@ -15,6 +15,7 @@ export function PrivyProviderWrapper({
         appearance: {
           theme: "dark",
           accentColor: "#FFD24D",
+          landingHeader: "Inicia sesión o crea cuenta",
         },
         embeddedWallets: {
           solana: {
