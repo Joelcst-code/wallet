@@ -18,6 +18,8 @@ model User {
   updatedAt      DateTime      @updatedAt
   enviadas       Transaction[] @relation("Enviadas")
   recibidas      Transaction[] @relation("Recibidas")
+  enviosPendientesComoRemitente EnvioPendiente[] @relation("PendienteRemitente")
+  enviosPendientesComoDestino  EnvioPendiente[] @relation("PendienteDestino")
 }
 
 enum TipoTransaccion {
@@ -38,4 +40,19 @@ model Transaction {
 
   @@index([deUserId])
   @@index([paraUserId])
+}
+
+// Registro efímero creado en /preparar y consumido en /confirmar, para que
+// el backend nunca confíe en el monto/destinatario que el cliente reenvía
+// al confirmar — solo confía en lo que él mismo calculó al preparar la tx.
+model EnvioPendiente {
+  id           String   @id @default(uuid())
+  remitenteId  String
+  remitente    User     @relation("PendienteRemitente", fields: [remitenteId], references: [id])
+  destinoId    String
+  destino      User     @relation("PendienteDestino", fields: [destinoId], references: [id])
+  monto        Decimal  @db.Decimal(20, 6)
+  createdAt    DateTime @default(now())
+
+  @@index([remitenteId])
 }

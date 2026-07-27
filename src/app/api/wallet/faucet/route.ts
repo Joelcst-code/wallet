@@ -3,7 +3,7 @@ import { PublicKey } from "@solana/web3.js";
 import { mintTo, getOrCreateAssociatedTokenAccount } from "@solana/spl-token";
 import { prisma } from "@/lib/prisma";
 import { getConnection, getFeePayerKeypair, getUsdtMint } from "@/lib/solana";
-import { montoAUnidades, unidadesAMonto } from "@/lib/token";
+import { montoAUnidades } from "@/lib/token";
 
 const MONTO_RECARGA = 50;
 
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
       },
     });
 
-    return NextResponse.json({ signature, monto: unidadesAMonto(montoAUnidades(MONTO_RECARGA)) });
+    return NextResponse.json({ signature, monto: MONTO_RECARGA });
   } catch {
     return NextResponse.json(
       { error: "No pudimos acreditar la recarga. Intenta de nuevo." },

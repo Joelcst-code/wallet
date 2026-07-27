@@ -4,20 +4,25 @@ import { prisma } from "@/lib/prisma";
 import { getConnection } from "@/lib/solana";
 
 export async function POST(req: NextRequest) {
-  const { privyUserId, destinatarioTelefono, monto, transaccionFirmada } =
-    await req.json();
+  const { privyUserId, envioPendienteId, transaccionFirmada } = await req.json();
 
-  if (!privyUserId || !destinatarioTelefono || !monto || !transaccionFirmada) {
+  if (!privyUserId || !envioPendienteId || !transaccionFirmada) {
     return NextResponse.json({ error: "Solicitud inválida" }, { status: 400 });
   }
 
   const remitente = await prisma.user.findUnique({ where: { privyUserId } });
-  const destinatario = await prisma.user.findUnique({
-    where: { telefono: destinatarioTelefono },
-  });
-
-  if (!remitente || !destinatario) {
+  if (!remitente) {
     return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
+  }
+
+  const envioPendiente = await prisma.envioPendiente.findUnique({
+    where: { id: envioPendienteId },
+  });
+  if (!envioPendiente || envioPendiente.remitenteId !== remitente.id) {
+    return NextResponse.json(
+      { error: "Este envío ya no es válido. Intenta de nuevo." },
+      { status: 404 }
+    );
   }
 
   try {
@@ -35,15 +40,18 @@ export async function POST(req: NextRequest) {
       "confirmed"
     );
 
-    await prisma.transaction.create({
-      data: {
-        signature,
-        tipo: "ENVIO",
-        monto,
-        deUserId: remitente.id,
-        paraUserId: destinatario.id,
-      },
-    });
+    await prisma.$transaction([
+      prisma.transaction.create({
+        data: {
+          signature,
+          tipo: "ENVIO",
+          monto: envioPendiente.monto,
+          deUserId: envioPendiente.remitenteId,
+          paraUserId: envioPendiente.destinoId,
+        },
+      }),
+      prisma.envioPendiente.delete({ where: { id: envioPendiente.id } }),
+    ]);
 
     return NextResponse.json({ signature });
   } catch {

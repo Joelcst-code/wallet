@@ -73,8 +73,7 @@ export function SendSheet() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           privyUserId,
-          destinatarioTelefono: destinatario,
-          monto: montoNumero,
+          envioPendienteId: dataPreparar.envioPendienteId,
           transaccionFirmada: base64Firmada,
         }),
       });

@@ -61,7 +61,16 @@ export async function POST(req: NextRequest) {
 
     const serializada = tx.serialize({ requireAllSignatures: false });
 
+    const envioPendiente = await prisma.envioPendiente.create({
+      data: {
+        remitenteId: remitente.id,
+        destinoId: destinatario.id,
+        monto,
+      },
+    });
+
     return NextResponse.json({
+      envioPendienteId: envioPendiente.id,
       transaccion: serializada.toString("base64"),
       destinatarioNombre: destinatario.nombre ?? destinatarioTelefono,
     });
